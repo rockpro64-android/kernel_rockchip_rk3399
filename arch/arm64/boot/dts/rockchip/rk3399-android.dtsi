@@ -256,7 +256,7 @@
 	};
 
 	hdmi_dp_sound: hdmi-dp-sound {
-		status = "disabled";
+		status = "okay";
 		compatible = "rockchip,rk3399-hdmi-dp";
 		rockchip,cpu = <&i2s2>;
 		rockchip,codec = <&hdmi>, <&cdn_dp>;
@@ -342,6 +342,7 @@
 };
 
 &i2s2 {
+	status = "okay";
 	#sound-dai-cells = <0>;
 	rockchip,bclk-fs = <128>;
 };

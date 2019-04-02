@@ -27,30 +27,43 @@
 
 &dsi {
 	status = "okay";
+	rockchip,lane-rate = <400>;
 
 	panel@0 {
 		compatible ="simple-panel-dsi";
 		reg = <0>;
 		backlight = <&backlight>;
-		enable-gpios = <&gpio1 13 GPIO_ACTIVE_HIGH>;
+		//enable-gpios = <&gpio1 13 GPIO_ACTIVE_HIGH>;
 
-		dsi,flags = <(MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_BURST)>;
+		dsi,flags = <(MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_BURST |
+				MIPI_DSI_MODE_LPM | MIPI_DSI_MODE_EOT_PACKET)>;
 		dsi,format = <MIPI_DSI_FMT_RGB888>;
 		dsi,lanes = <4>;
+
+		panel-init-sequence = [
+            15 00 02 80 58
+            15 00 02 81 47
+            15 00 02 82 d4
+            15 00 02 83 88
+            15 00 02 84 a9
+            15 00 02 85 c3
+            15 00 02 86 82     
+        ];
+
 
 		display-timings {
 			native-mode = <&timing0>;
 
 			timing0: timing0 {
-				clock-frequency = <160000000>;
-				hactive = <1200>;
-				vactive = <1920>;
-				hback-porch = <21>;
-				hfront-porch = <120>;
-				vback-porch = <18>;
-				vfront-porch = <21>;
-				hsync-len = <20>;
-				vsync-len = <3>;
+				clock-frequency = <50000000>;
+				hactive = <1024>;
+				vactive = <600>;
+				hback-porch = <160>;
+				hfront-porch = <160>;
+				vback-porch = <23>;
+				vfront-porch = <12>;
+				hsync-len = <10>;
+				vsync-len = <1>;
 				hsync-active = <0>;
 				vsync-active = <0>;
 				de-active = <0>;
@@ -58,7 +71,7 @@
 			};
 		};
 
-		dsp_lut: dsp-lut {
+		/*dsp_lut: dsp-lut {
 			gamma-lut = <
 			0x00000000 0x00010101 0x00020202 0x00030303 0x00040404 0x00050505 0x00060606 0x00070707
 			0x00080808 0x00090909 0x000a0a0a 0x000b0b0b 0x000c0c0c 0x000d0d0d 0x000e0e0e 0x000f0f0f
@@ -92,13 +105,36 @@
 			0x00e8e8e8 0x00e9e9e9 0x00eaeaea 0x00ebebeb 0x00ececec 0x00ededed 0x00eeeeee 0x00efefef
 			0x00f0f0f0 0x00f1f1f1 0x00f2f2f2 0x00f3f3f3 0x00f4f4f4 0x00f5f5f5 0x00f6f6f6 0x00f7f7f7
 			0x00f8f8f8 0x00f9f9f9 0x00fafafa 0x00fbfbfb 0x00fcfcfc 0x00fdfdfd 0x00fefefe 0x00ffffff>;
-		};
+		};*/
 	};
 };
 
 &cdn_dp {
-	extcon = <&fusb0>, <&fusb1>;
+	extcon = <&fusb0>;
 	status = "okay";
+};
+
+&dsi_in_vopl {
+        status = "disabled";
+};
+&dsi_in_vopb {
+       status = "okay";
+};
+&hdmi_in_vopb {
+        status = "disabled";
+};
+&hdmi_in_vopl{
+        status = "okay";
+};
+
+&vopb {
+	assigned-clocks = <&cru DCLK_VOP0_DIV>;
+	assigned-clock-parents = <&cru PLL_CPLL>;
+};
+
+&vopl {
+	assigned-clocks = <&cru DCLK_VOP1_DIV>;
+	assigned-clock-parents = <&cru PLL_VPLL>;
 };
 
 &route_dsi {
@@ -179,21 +215,19 @@
 
 &firmware_android {
 	compatible = "android,firmware";
+	boot_devices = "fe330000.sdhci";
+	vbmeta {
+                 compatible = "android,vbmeta";
+                 parts = "vbmeta,boot,system,vendor,dtbo";
+        };
 	fstab {
 		compatible = "android,fstab";
-		system {
-			compatible = "android,system";
-			dev = "/dev/block/by-name/system";
-			type = "ext4";
-			mnt_flags = "ro,barrier=1,inode_readahead_blks=8";
-			fsmgr_flags = "wait,verify";
-		};
 		vendor {
 			compatible = "android,vendor";
 			dev = "/dev/block/by-name/vendor";
 			type = "ext4";
 			mnt_flags = "ro,barrier=1,inode_readahead_blks=8";
-			fsmgr_flags = "wait,verify";
+			fsmgr_flags = "wait,avb";
 		};
 	};
 };
