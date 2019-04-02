@@ -53,6 +53,7 @@
 #include "stmmac.h"
 #include <linux/reset.h>
 #include <linux/of_mdio.h>
+#include <asm/system_info.h>
 
 #define	STMMAC_ALIGN(x)		__ALIGN_KERNEL(x, SMP_CACHE_BYTES)
 
@@ -1622,6 +1623,24 @@ static int stmmac_get_hw_features(struct stmmac_priv *priv)
  */
 static void stmmac_check_ether_addr(struct stmmac_priv *priv)
 {
+	unsigned char *addr;
+	addr = priv->dev->dev_addr;	
+	printk("ORG addr==> %02x:%02x:%02x:%02x:%02x:%02x \n",
+				addr[0], addr[1], addr[2], addr[3], addr[4], addr[5]);
+	 printk("CPUID: %08x %08x\n",
+ 		system_serial_high, system_serial_low);
+	/*addr0-2 user provided*/
+	addr[0] = 0x00;
+	addr[1] = 0x06;
+	addr[2] = 0xDC;
+	addr[3] = (unsigned char)((system_serial_high >> 24 ) & 0xFF);
+	addr[4] = (unsigned char)(system_serial_high & 0xFF);
+	addr[5] = (unsigned char)(system_serial_low & 0xFF);
+
+	printk("TTT NEW check_addr==> %02x:%02x:%02x:%02x:%02x:%02x \n",
+				addr[0], addr[1], addr[2], addr[3], addr[4], addr[5]);
+	/*Little Endian : we deal addr[0] to make it a valid mac address */
+
 	if (!is_valid_ether_addr(priv->dev->dev_addr)) {
 		priv->hw->mac->get_umac_addr(priv->hw,
 					     priv->dev->dev_addr, 0);
