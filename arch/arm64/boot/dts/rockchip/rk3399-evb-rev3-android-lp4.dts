@@ -219,8 +219,8 @@
 
 &firmware_android {
 	compatible = "android,firmware";
-	//boot_devices = "fe330000.sdhci";
-	boot_devices = "fe320000.dwmmc";
+	boot_devices = "fe330000.sdhci";
+	//boot_devices = "fe320000.dwmmc";
 	vbmeta {
                  compatible = "android,vbmeta";
                  parts = "vbmeta,boot,system,vendor,dtbo";
