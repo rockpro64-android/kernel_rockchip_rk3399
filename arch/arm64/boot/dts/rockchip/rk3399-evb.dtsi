@@ -267,6 +267,7 @@
 &sdmmc {
 	clock-frequency = <150000000>;
 	clock-freq-min-max = <400000 150000000>;
+	//supports-emmc;
 	supports-sd;
 	bus-width = <4>;
 	cap-mmc-highspeed;

@@ -12,6 +12,10 @@
 / {
 	model = "Rockchip RK3399 Evaluation Board v3 (Android) LPDDR4";
 	compatible = "rockchip,android", "rockchip,rk3399-evb-rev3-android-lp4", "rockchip,rk3399";
+	chosen {
+	bootargs = "earlycon=uart8250,mmio32,0xff1a0000 swiotlb=1 console=ttyFIQ0 androidboot.baseband=N/A androidboot.veritymode=enforcing androidboot.hardware=rk30board androidboot.console=ttyFIQ0 init=/init initrd=0x62000001,0x00800000 coherent_pool=1m";
+	};
+
 
 	/* first 64k(0xff8c0000~0xff8d0000) for ddr and suspend */
 	iram: sram@ff8d0000 {
@@ -215,7 +219,8 @@
 
 &firmware_android {
 	compatible = "android,firmware";
-	boot_devices = "fe330000.sdhci";
+	//boot_devices = "fe330000.sdhci";
+	boot_devices = "fe320000.dwmmc";
 	vbmeta {
                  compatible = "android,vbmeta";
                  parts = "vbmeta,boot,system,vendor,dtbo";
